@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
     lib/ruby-etsy/calls.rb
     lib/ruby-etsy/version.rb
     lib/ruby-etsy/configuration.rb
-    lib/ruby-etsy/calls/receipt.rb
+    lib/ruby-etsy/calls/receipts.rb
   ]
 
   spec.required_ruby_version = '>= 2.3'
