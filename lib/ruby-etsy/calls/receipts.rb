@@ -3,9 +3,11 @@ class RubyEtsy
     module Receipts
 
       def get_receipts
-        "puts receipts"
+        client.action("/shops/#{client.shop_id}/receipts", http_method: :get)
+      end
 
-        client.action('https://openapi.etsy.com/v3/application/shops/31969853/receipts', http_method: :get)
+      def get_receipt(id)
+        client.action("/shops/#{client.shop_id}/receipts/#{id}", http_method: :get)
       end
     end
   end

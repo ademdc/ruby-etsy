@@ -10,13 +10,14 @@ class RubyEtsy
   end
 
   class Configuration
-    attr_accessor :access_token, :refresh_token, :api_key, :api_secret
+    attr_accessor :access_token, :refresh_token, :api_key, :api_secret, :shop_id
 
     def initialize
       @access_token    = nil
       @refresh_token   = nil
       @api_key         = nil
       @api_secret      = nil
+      @shop_id         = nil
     end
   end
 end

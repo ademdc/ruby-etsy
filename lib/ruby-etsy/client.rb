@@ -6,16 +6,18 @@ class RubyEtsy
   class Client
 
     REFRESH_TOKEN_URL='https://api.etsy.com/v3/public/oauth/token'
+    V3_URL='https://openapi.etsy.com/v3/application'
     
-    attr_accessor :access_token, :refresh_token, :api_key, :api_secret
+    attr_accessor :access_token, :refresh_token, :api_key, :api_secret, :shop_id
 
-    def initialize(access_token:, refresh_token:, api_key:, api_secret:) 
+    def initialize(access_token:, refresh_token:, api_key:, api_secret:, shop_id:) 
       RubyEtsy.configure
 
       @access_token  = access_token  || RubyEtsy.config.access_token
       @refresh_token = refresh_token || RubyEtsy.config.refresh_token
       @api_key       = api_key       || RubyEtsy.config.api_key
       @api_secret    = api_secret    || RubyEtsy.config.api_secret
+      @shop_id       = shop_id       || RubyEtsy.config.shop_id
     end
 
     def action(url, payload: {}, http_method: :post)
@@ -23,21 +25,23 @@ class RubyEtsy
         'User-Agent': "RubyEtsy client v#{RubyEtsy::VERSION})",
         'x-api-key': api_key,
         'Authorization': "Bearer #{access_token}" 
-
       }
 
       response = ::RestClient::Request.execute(
         method:     http_method, 
-        url:        url,
+        url:        construct_url(url),
         payload:    payload.to_json, 
         headers:    headers,
         timeout:    5, 
         verify_ssl: ::OpenSSL::SSL::VERIFY_NONE
       )
       
-      # RubyEtsy::Response.parse(response)
-      parsed = JSON.parse(response.body)
       ::HttpParser.parse(response)
+    rescue RestClient::Unauthorized => e
+      puts "RESCUED UNATHORIZED"
+      
+      refresh_token
+      action(url, http_method: :get)
     end
 
     def refresh_token
@@ -57,10 +61,16 @@ class RubyEtsy
       )
 
       parsed        = JSON.parse(response.body)
-      access_token  = parsed['access_token']
-      refresh_token = parsed['refresh_token']
+      @access_token  = parsed['access_token']
+      @refresh_token = parsed['refresh_token']
 
       ::HttpParser.parse(response)
+    end
+
+    private
+
+    def construct_url(url)
+      "#{V3_URL}#{url}"
     end
   end
 end
