@@ -2,7 +2,6 @@ require 'ruby-etsy/client'
 require 'ruby-etsy/calls'
 require 'ruby-etsy/version'
 require 'ruby-etsy/configuration'
-require 'byebug'
 
 class RubyEtsy
   include Calls
