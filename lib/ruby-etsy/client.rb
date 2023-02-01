@@ -5,6 +5,8 @@ require 'active_support'
 require 'active_support/core_ext'
 
 class RubyEtsy
+  class RefreshTokenError < StandardError; end;
+
   class Client
 
     REFRESH_TOKEN_URL='https://api.etsy.com/v3/public/oauth/token'
@@ -42,8 +44,9 @@ class RubyEtsy
     rescue RestClient::Unauthorized => e
       puts "RESCUED UNATHORIZED"
       
-      refresh_token
-      action(url, http_method: :get)
+      token = send :refresh_token
+
+      raise RefreshTokenError.new('Could not refresh token') unless token.success?
     end
 
     def refresh_token
@@ -63,12 +66,15 @@ class RubyEtsy
       )
 
       parsed        = JSON.parse(response.body)
+
       @access_token  = parsed['access_token']
       @refresh_token = parsed['refresh_token']
 
       puts parsed 
 
       ::HttpParser.parse(response)
+    rescue RestClient::ExceptionWithResponse => e
+      ::HttpParser.parse(OpenStruct.new(code: e.http_code, body: e.http_body))
     end
 
     private
