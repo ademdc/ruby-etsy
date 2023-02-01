@@ -1,11 +1,11 @@
 # ruby-etsy
-Ruby HTTP parser
+Etsy Ruby Wrapper
 
 ## Installation
 Add this line to your application's Gemfile:
 
 ```
-gem 'ruby-etsy', '1.0.0', require: 'ruby-etsy'
+gem 'ruby-etsy', '0.0.4', require: 'ruby-etsy'
 ```
 
 ...followed with:
